@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>AWS Websockets</title>
+</head>
+
+<body onload="connectToWebSocket()">
+
+<p>Subwoofer Chat</p>
+<p id="socketState"></p>
+<p id="messages"></p>   
+
+<input id="messageInput" type="text" size="80" placeholder="Type something...">
+<button id="sendMessageButton" onclick="sendMessage()">Send</button><br/>
+
+<script>
+
+    document.getElementById("socketState").innerHTML = 'disconnected';
+
+    var socket = null;
+    
+    function sendMessage(){
+        payload = { "action": "sendmessage", "data": document.getElementById("messageInput").value };
+
+        socket.send(JSON.stringify(payload));
+    }
+
+    function connectToWebSocket(){
+        webSocketConnection = "wss://rctce98zb7.execute-api.us-east-1.amazonaws.com/Prod";
+        socket = new WebSocket(webSocketConnection);
+
+        socket.onopen = function(event) {
+            document.getElementById("socketState").innerHTML = 'connected';
+            document.getElementById("sendMessageButton").disabled = false;
+        };
+
+        socket.onmessage = function(event) {
+            document.getElementById("messages").innerHTML += event.data + '<br/>'
+        };
+
+        socket.onerror = function(event) {
+            console.error("WebSocket error observed:", event);
+            document.getElementById("socketState").innerHTML = 'connection error';
+        };
+
+        socket.onclose = function(event) {
+            document.getElementById("socketState").innerHTML = 'disconnected';
+            document.getElementById("sendMessageButton").disabled = true;
+        };
+    }
+
+    function disconnect(){
+        socket.close();
+    }
+</script>
+</body>
+
+</html>

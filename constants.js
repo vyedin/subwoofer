@@ -1,0 +1,1 @@
+WEB_SOCKETS_CONNECTION = "wss://rctce98zb7.execute-api.us-east-1.amazonaws.com/Prod"
