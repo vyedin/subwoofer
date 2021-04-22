@@ -2,13 +2,12 @@ version: 1
 frontend:
   phases:
     pre-build:
-      commands:
-        - cd subwoofer-client
+      commands: []
     build:
       commands:
         - npm run build
   artifacts:
-    baseDirectory: /subwoofer-client/build
+    baseDirectory: /build
     files:
       - '**/*'
   cache:
