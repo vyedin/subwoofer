@@ -9,7 +9,7 @@ frontend:
         - npm ci
         - npm run build
   artifacts:
-    baseDirectory: /build
+    baseDirectory: subwoofer-client/build
     files:
       - '**/*'
   cache:
