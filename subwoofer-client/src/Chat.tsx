@@ -11,7 +11,7 @@ const generateAsyncUrlGetter = (url: string, timeout = 2000) => () => {
   };
 
 export const Chat = () => {
-  const [socketUrl] = useState('wss://rctce98zb7.execute-api.us-east-1.amazonaws.com/Prod');
+  const [socketUrl] = useState('wss://d8xem5kqu1.execute-api.us-east-1.amazonaws.com/Prod');
   const [messageHistory, setMessageHistory] = useState([]);
   const [inputtedMessage, setInputtedMessage] = useState('');
   const {
@@ -27,7 +27,6 @@ export const Chat = () => {
     lastMessage && setMessageHistory(prev => prev.concat(lastMessage.data));
   }, [lastMessage]);
 
-  const payload = { 'action': 'sendmessage', 'data': 'Hello'};
   const handleSendMessage = useCallback((message: string) =>
     sendMessage(JSON.stringify({ 'action': 'sendmessage', 'data': message})), []);
 
