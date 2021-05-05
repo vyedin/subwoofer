@@ -1,5 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
+import { Form, Input, Button, List, Avatar } from 'antd';
+import { SendOutlined } from '@ant-design/icons';
 
 //Generates the click handler, which returns a promise that resovles to the provided url.
 const generateAsyncUrlGetter = (url: string, timeout = 2000) => () => {
@@ -27,8 +29,10 @@ export const Chat = () => {
     lastMessage && setMessageHistory(prev => prev.concat(lastMessage.data));
   }, [lastMessage]);
 
-  const handleSendMessage = useCallback((message: string) =>
-    sendMessage(JSON.stringify({ 'action': 'sendmessage', 'data': message})), []);
+  const handleSendMessage = useCallback((message: string) => {
+    sendMessage(JSON.stringify({ 'action': 'sendmessage', 'data': message}));
+    setInputtedMessage('')
+  }, []);
 
   const connectionStatus = {
     [ReadyState.CONNECTING]: 'Connecting',
@@ -40,15 +44,37 @@ export const Chat = () => {
 
   return (
     <div>
-      <span>The WebSocket is currently {connectionStatus}</span>
-      <p>Message History: {messageHistory.join(', ')}</p>
-      <input
-          type={'text'}
-          value={inputtedMessage}
-          onChange={e => setInputtedMessage(e.target.value)}/>
-        <button
+      <List
+        itemLayout='horizontal'
+        dataSource={messageHistory}
+        renderItem={item => (
+          <List.Item>
+            <List.Item.Meta
+              avatar={<Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />}
+              title="Nina"
+              description={item}
+            />
+          </List.Item>
+        )}
+        />
+      <Form
+        name='chat_message_form'
+        layout='inline'
+        >
+        <Form.Item>
+          <Input
+            type={'text'}
+            size='large'
+            value={inputtedMessage}
+            disabled={connectionStatus != 'Open'}
+            onChange={e => setInputtedMessage(e.target.value)}/>
+        </Form.Item>
+        <Form.Item>
+        <Button type='primary' size='large' icon={<SendOutlined/>} htmlType='submit'
           onClick={() => handleSendMessage(inputtedMessage)}
-          disabled={readyState !== ReadyState.OPEN}>Send</button>
+          disabled={readyState !== ReadyState.OPEN}>Reply</Button>
+        </Form.Item>
+      </Form>
     </div>
   );
 };
