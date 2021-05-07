@@ -1,8 +1,8 @@
 import React from 'react';
 import logo from './subwoofer_logo.svg';
 import './App.css';
-import {Chat} from './Chat';
-import {Login} from './Login';
+import {Chat} from './chat';
+import {Login} from './login';
 
 function App() {
   return (
