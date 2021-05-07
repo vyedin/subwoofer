@@ -1,0 +1,20 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-subwooferclient-dev-212413-authRole",
+      "UnauthRoleArn": "arn:aws:iam::423963463904:role/amplify-subwooferclient-dev-212413-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::423963463904:role/amplify-subwooferclient-dev-212413-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-subwooferclient-dev-212413-deployment",
+      "UnauthRoleName": "amplify-subwooferclient-dev-212413-unauthRole",
+      "StackName": "amplify-subwooferclient-dev-212413",
+      "StackId": "arn:aws:cloudformation:us-east-1:423963463904:stack/amplify-subwooferclient-dev-212413/c649dc00-ae09-11eb-a487-0e46b6c7c4a3",
+      "AmplifyAppId": "d223bxorj7pg7n"
+    },
+    "categories": {
+      "auth": {
+        "reactAmplifyCognito": {}
+      }
+    }
+  }
+}

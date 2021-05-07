@@ -3,15 +3,6 @@ import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { Form, Input, Button, List, Avatar } from 'antd';
 import { SendOutlined } from '@ant-design/icons';
 
-//Generates the click handler, which returns a promise that resovles to the provided url.
-const generateAsyncUrlGetter = (url: string, timeout = 2000) => () => {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve(url);
-      }, timeout);
-    })
-  };
-
 export const Chat = () => {
   const [socketUrl] = useState('wss://d8xem5kqu1.execute-api.us-east-1.amazonaws.com/Prod');
   const [messageHistory, setMessageHistory] = useState([]);
