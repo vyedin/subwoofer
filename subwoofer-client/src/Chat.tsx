@@ -1,11 +1,16 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { Form, Input, Button, List, Avatar } from 'antd';
 import { SendOutlined } from '@ant-design/icons';
 import { Hub, Auth } from "aws-amplify";
 
+// The chat component used the react-use-websocket API here: https://www.npmjs.com/package/react-use-websocket
+// Some logic to fetch current session data are from here: 
+// https://towardsdatascience.com/create-a-question-and-answer-bot-with-amazon-kendra-and-aws-fargate-79c537d68e45
+
 export const Chat = () => {
-  const [socketUrl, setSocketUrl] = useState('wss://8ks1akfff9.execute-api.us-east-1.amazonaws.com/Prod')
+  let rootPath = 'wss://8ks1akfff9.execute-api.us-east-1.amazonaws.com/Prod'
+  const [socketUrl, setSocketUrl] = useState(rootPath)
   const [userID, setUserID] = useState('Anonymous')
   const [messageHistory, setMessageHistory] = useState([]);
   const [inputtedMessage, setInputtedMessage] = useState('');
@@ -42,7 +47,7 @@ export const Chat = () => {
     const { username, signInUserSession } = user;
     setUserID(username)
     console.log(signInUserSession);
-    setSocketUrl(`wss://8ks1akfff9.execute-api.us-east-1.amazonaws.com/Prod?token=
+    setSocketUrl(`${rootPath}?token=
       ${signInUserSession.accessToken.jwtToken}&username=${username}`)
   }
 

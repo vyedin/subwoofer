@@ -1,6 +1,8 @@
 const AWS = require("aws-sdk");
 const jose = require("node-jose");
 const fetch = require("node-fetch");
+
+// Using lambda env vars https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html
 const keys_url =
         `https://cognito-idp.${process.env.AWS_REGION}.amazonaws.com/${process.env.USER_POOL_ID}/.well-known/jwks.json`;
 const app_client_id = process.env.APP_CLIENT_ID;
@@ -23,6 +25,8 @@ exports.handler = async (event, context, callback) => {
     }
   };
 
+// Logic for splitting and verifying the token from here: 
+// https://towardsdatascience.com/create-a-question-and-answer-bot-with-amazon-kendra-and-aws-fargate-79c537d68e45
 const authCognitoToken = async (token, methodArn) => {
     if (!token) throw new Error("Unauthorized");
 
@@ -81,12 +85,4 @@ const generatePolicy = function (principalId, effect, resource) {
         authResponse.policyDocument = policyDocument;
     }
     return authResponse;
-};
-
-const generateAllow = function (principalId, resource) {
-    return generatePolicy(principalId, "Allow", resource);
-};
-
-const generateDeny = function (principalId, resource) {
-    return generatePolicy(principalId, "Deny", resource);
 };
