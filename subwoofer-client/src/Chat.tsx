@@ -1,29 +1,50 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { Form, Input, Button, List, Avatar } from 'antd';
 import { SendOutlined } from '@ant-design/icons';
-
-//Generates the click handler, which returns a promise that resovles to the provided url.
-const generateAsyncUrlGetter = (url: string, timeout = 2000) => () => {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve(url);
-      }, timeout);
-    })
-  };
+import { Hub, Auth } from "aws-amplify";
 
 export const Chat = () => {
-  const [socketUrl] = useState('wss://d8xem5kqu1.execute-api.us-east-1.amazonaws.com/Prod');
+  const [socketUrl, setSocketUrl] = useState('wss://8ks1akfff9.execute-api.us-east-1.amazonaws.com/Prod')
+  const [userID, setUserID] = useState('Anonymous')
   const [messageHistory, setMessageHistory] = useState([]);
   const [inputtedMessage, setInputtedMessage] = useState('');
-  const {
-    sendMessage,
-    lastMessage,
-    readyState,
-  } = useWebSocket(socketUrl, {
-      share: true,
-      shouldReconnect: () => true,
+  const [user, setUser] = useState(false);
+  const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl, {
+    share: true,
+    shouldReconnect: () => true,
   });
+
+  useEffect(() => {
+    if (!user) {
+      getCurrentUser();
+    }
+    Hub.listen("auth", (data) => {
+      const { payload } = data;
+      if (payload.data && payload.data.event === "signIn" && !user) {
+        getCurrentUser();
+      }
+    });
+  }, []);
+
+  const getCurrentUser = () => {
+    Auth.currentAuthenticatedUser({
+      bypassCache: false,
+    })
+      .then((_user) => {
+        setUser(_user);
+        setupWebsocket(_user);
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const setupWebsocket = (user: { username: any; signInUserSession: any; }) => {
+    const { username, signInUserSession } = user;
+    setUserID(username)
+    console.log(signInUserSession);
+    setSocketUrl(`wss://8ks1akfff9.execute-api.us-east-1.amazonaws.com/Prod?token=
+      ${signInUserSession.accessToken.jwtToken}&username=${username}`)
+  }
 
   useEffect(() => {
     lastMessage && setMessageHistory(prev => prev.concat(lastMessage.data));
@@ -50,8 +71,8 @@ export const Chat = () => {
         renderItem={item => (
           <List.Item>
             <List.Item.Meta
-              avatar={<Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />}
-              title="Nina"
+              avatar={<Avatar src='https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png' />}
+              title={userID}
               description={item}
             />
           </List.Item>
@@ -66,7 +87,7 @@ export const Chat = () => {
             type={'text'}
             size='large'
             value={inputtedMessage}
-            disabled={connectionStatus != 'Open'}
+            disabled={connectionStatus !== 'Open'}
             onChange={e => setInputtedMessage(e.target.value)}/>
         </Form.Item>
         <Form.Item>

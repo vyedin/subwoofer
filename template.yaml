@@ -113,6 +113,17 @@ Resources:
       SSESpecification:
         SSEEnabled: True
       TableName: !Ref TableName
+
+  ChatApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Auth:
+        DefaultAuthorizer: LambdaAuthorizer
+        Authorizers:
+          LambdaAuthorizer:
+            FunctionArn: !GetAtt AuthFunction.Arn
+
   OnConnectFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -120,6 +131,13 @@ Resources:
       Handler: app.handler
       MemorySize: 256
       Runtime: nodejs12.x
+      Events:
+        GetRoot:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ChatApi
+            Path: /
+            Method: get
       Environment:
         Variables:
           TABLE_NAME: !Ref TableName
@@ -134,6 +152,7 @@ Resources:
       Action: lambda:InvokeFunction
       FunctionName: !Ref OnConnectFunction
       Principal: apigateway.amazonaws.com
+
   OnDisconnectFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -155,6 +174,7 @@ Resources:
       Action: lambda:InvokeFunction
       FunctionName: !Ref OnDisconnectFunction
       Principal: apigateway.amazonaws.com
+
   SendMessageFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -183,6 +203,22 @@ Resources:
       FunctionName: !Ref SendMessageFunction
       Principal: apigateway.amazonaws.com
 
+  AuthFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/auth/
+      Handler: app.handler
+      MemorySize: 256
+      Runtime: nodejs12.x
+  AuthPermission:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+      - SimpleChatWebSocket
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref AuthFunction
+      Principal: apigateway.amazonaws.com
+
 Outputs:
   ConnectionsTableArn:
     Description: "Connections table ARN"
@@ -199,6 +235,10 @@ Outputs:
   SendMessageFunctionArn:
     Description: "SendMessage function ARN"
     Value: !GetAtt SendMessageFunction.Arn
+
+  AuthFunctionArn:
+    Description: "Auth function ARN"
+    Value: !GetAtt AuthFunction.Arn
 
   WebSocketURI:
     Description: "The WSS Protocol URI to connect to"

@@ -1,9 +1,14 @@
 import React from 'react';
+import { Amplify } from "aws-amplify";
+import { withAuthenticator } from "aws-amplify-react";
+import aws_exports from './aws-exports';
 import logo from './subwoofer_logo.svg';
 import './App.css';
-import {Chat} from './Chat';
+import {Chat} from './chat';
 
-function App() {
+Amplify.configure(aws_exports);
+
+function App(this: any) {
   return (
     <div className="App">
       <header className="App-header">
@@ -17,4 +22,11 @@ function App() {
   );
 }
 
-export default App;
+const signUpConfig = {
+  hiddenDefaults: ["phone_number"],
+  signUpFields: [
+    { label: "Name", key: "name", required: true, type: "string" }
+  ]
+}
+
+export default withAuthenticator(App, true, [], null, null, signUpConfig);
