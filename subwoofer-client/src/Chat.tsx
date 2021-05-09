@@ -9,16 +9,17 @@ import { Hub, Auth } from "aws-amplify";
 // https://towardsdatascience.com/create-a-question-and-answer-bot-with-amazon-kendra-and-aws-fargate-79c537d68e45
 
 export const Chat = () => {
+
   let rootPath = 'wss://8ks1akfff9.execute-api.us-east-1.amazonaws.com/Prod'
-  const [socketUrl, setSocketUrl] = useState(rootPath)
-  const [userID, setUserID] = useState('Anonymous')
-  const [messageHistory, setMessageHistory] = useState([]);
+  const [socketUrl, setSocketUrl] = useState(rootPath) //this is a bit of a hack as we have to get auth data before we can connect to the socket
+  const [userID, setUserID] = useState<string>()
   const [inputtedMessage, setInputtedMessage] = useState('');
   const [user, setUser] = useState(false);
   const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl, {
     share: true,
     shouldReconnect: () => true,
   });
+  const [messageHistory, setMessageHistory] = useState<{ message: string, user: string }[]>([]);
 
   useEffect(() => {
     if (!user) {
@@ -51,8 +52,13 @@ export const Chat = () => {
       ${signInUserSession.accessToken.jwtToken}&username=${username}`)
   }
 
+  // useEffect(() => {
+  //   lastMessage && setMessageHistory(prev => prev.concat(lastMessage.data));
+  // }, [lastMessage]);
+
   useEffect(() => {
-    lastMessage && setMessageHistory(prev => prev.concat(lastMessage.data));
+    lastMessage && userID && setMessageHistory(prev => prev.concat([JSON.parse(lastMessage.data)]));
+    console.log(messageHistory)
   }, [lastMessage]);
 
   const handleSendMessage = useCallback((message: string) => {
@@ -77,8 +83,8 @@ export const Chat = () => {
           <List.Item>
             <List.Item.Meta
               avatar={<Avatar src='https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png' />}
-              title={userID}
-              description={item}
+              title={item.user}
+              description={item.message}
             />
           </List.Item>
         )}
@@ -97,7 +103,7 @@ export const Chat = () => {
         </Form.Item>
         <Form.Item>
         <Button type='primary' size='large' icon={<SendOutlined/>} htmlType='submit'
-          onClick={() => handleSendMessage(inputtedMessage)}
+          onClick={() => handleSendMessage(`{ "message": "${inputtedMessage}", "user": "${userID}" }`)}
           disabled={readyState !== ReadyState.OPEN}>Reply</Button>
         </Form.Item>
       </Form>
