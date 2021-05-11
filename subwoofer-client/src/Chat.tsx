@@ -52,10 +52,6 @@ export const Chat = () => {
       ${signInUserSession.accessToken.jwtToken}&username=${username}`)
   }
 
-  // useEffect(() => {
-  //   lastMessage && setMessageHistory(prev => prev.concat(lastMessage.data));
-  // }, [lastMessage]);
-
   useEffect(() => {
     lastMessage && userID && setMessageHistory(prev => prev.concat([JSON.parse(lastMessage.data)]));
     console.log(messageHistory)
