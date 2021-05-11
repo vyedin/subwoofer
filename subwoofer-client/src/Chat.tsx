@@ -82,7 +82,7 @@ export const Chat = () => {
         renderItem={item => (
           <List.Item>
             <List.Item.Meta
-              avatar={<Avatar src='https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png' />}
+              avatar={<Avatar src='https://subwoofer-avatars.s3.amazonaws.com/sw.png' />}
               title={item.user}
               description={item.message}
             />

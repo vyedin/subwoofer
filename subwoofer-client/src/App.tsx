@@ -1,12 +1,12 @@
 import React from 'react';
 import { Amplify } from "aws-amplify";
 import { withAuthenticator } from "aws-amplify-react";
-import aws_exports from './aws-exports';
+import config from './aws-exports';
 import logo from './subwoofer_logo.svg';
 import './App.css';
-import {Chat} from './chat';
+import {Chat} from './Chat';
 
-Amplify.configure(aws_exports);
+Amplify.configure(config);
 
 function App(this: any) {
   return (
