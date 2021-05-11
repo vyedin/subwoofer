@@ -24,9 +24,6 @@ function App(this: any) {
 
 const signUpConfig = {
   hiddenDefaults: ["phone_number"],
-  signUpFields: [
-    { label: "Name", key: "name", required: true, type: "string" }
-  ]
 }
 
 export default withAuthenticator(App, true, [], null, null, signUpConfig);
